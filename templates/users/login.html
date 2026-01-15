@@ -1,23 +1,126 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
-
+{% block navbar %}{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-4">
 
-        <h3 class="text-center mb-3">Login to NextDoor</h3>
+<style>
+    body {
+        height: 100vh;
+        margin: 0;
+        background-image: url("{% static 'assets/bg.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .login-wrapper {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        /* vertical center */
+        justify-content: center;
+        /* horizontal center */
+    }
+
+
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 35px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        text-align: center;
+    }
+
+    .logo {
+        width: 120px;
+        margin-bottom: 6px;
+        animation: floatLogo 3s ease-in-out infinite;
+    }
+
+    @keyframes floatLogo {
+        0% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-6px);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    .tagline {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 22px;
+        color: rgba(47, 183, 164, 0.85);
+        letter-spacing: 0.6px;
+        font-style: italic;
+    }
+
+    .login-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #1f2933;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .btn-primary {
+        background-color: #2fb7a4;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background-color: #26a18f;
+    }
+</style>
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <img src="{% static 'assets/logo.png' %}" class="logo" alt="NextDoor Logo">
+
+        <p class="tagline">Closer Than You Think.</p>
+
+        <div class="login-title">Login</div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
 
         <form method="post">
             {% csrf_token %}
 
-            <div class="mb-3">
+            <div class="mb-3 text-start">
                 <label class="form-label">Username</label>
-                <input type="text" class="form-control" placeholder="Enter username">
+                <input type="text" name="username" class="form-control" required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 text-start">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-control" placeholder="Enter password">
+                <input type="password" name="password" class="form-control" required>
             </div>
 
             <button class="btn btn-primary w-100">Login</button>
@@ -25,4 +128,5 @@
 
     </div>
 </div>
+
 {% endblock %}
