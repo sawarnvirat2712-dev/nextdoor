@@ -3,44 +3,84 @@
 
 {% block content %}
 
-<!-- 🔹 1. PAGE TITLE -->
-<h2>{{ category|title }} Near You</h2>
+<h2 class="mb-3">{{ category|title }} Near You</h2>
 
-<!-- 🔹 2. DISTANCE + LOCATION FORM -->
-<form method="POST" onsubmit="return checkLocation();">
+<!-- 🔹 DISTANCE + LOCATION FORM -->
+<form method="POST" onsubmit="return checkLocation();" class="mb-4">
     {% csrf_token %}
 
-    <label>Show results within (km)</label>
+    <label class="form-label">Show results within (km)</label>
     <input type="number" name="distance" required min="1" class="form-control mb-2">
 
-    <!-- hidden fields for location -->
     <input type="hidden" name="lat" id="lat">
     <input type="hidden" name="lng" id="lng">
 
-    <button class="btn btn-primary">Find</button>
+    <button class="btn btn-primary mt-2">Find</button>
 </form>
 
-<!-- 🔹 3. GEOLOCATION SCRIPT (KEEP IT HERE) -->
+<!-- 🔹 GEOLOCATION -->
 <script>
-    navigator.geolocation.getCurrentPosition(function (position) {
-        document.getElementById("lat").value = position.coords.latitude;
-        document.getElementById("lng").value = position.coords.longitude;
-    });
-    function checkLocation() {
-    const lat = document.getElementById("lat").value;
-    const lng = document.getElementById("lng").value;
+    navigator.geolocation.getCurrentPosition(
+        function (position) {
+            document.getElementById("lat").value = position.coords.latitude;
+            document.getElementById("lng").value = position.coords.longitude;
+        },
+        function () {
+            alert("Location access is required to find nearby services.");
+        }
+    );
 
-    if (!lat || !lng) {
-        alert("Please allow location access to continue.");
-        return false; // ❌ STOP form submit
+    function checkLocation() {
+        const lat = document.getElementById("lat").value;
+        const lng = document.getElementById("lng").value;
+
+        if (!lat || !lng) {
+            alert("Please allow location access to continue.");
+            return false;
+        }
+        return true;
     }
-    return true; // ✅ allow submit
-}
 </script>
 
+{% if places %}
 <hr>
 
-<!-- 🔹 4. RESULTS SECTION -->
+<!-- 🔹 MAP PREVIEW -->
+<div id="map" style="height: 400px; border-radius: 12px;" class="mb-4"></div>
+
+<script>
+    const places = [];
+    {% for place in places %}
+    places.push({
+        name: "{{ place.name|default:''|escapejs }}",
+        lat: {{ place.latitude }},
+        lng: {{ place.longitude }},
+        distance: {{ place.distance }}
+});
+    {% endfor %}
+
+    if (places.length > 0) {
+        const map = L.map('map').setView(
+            [places[0].lat, places[0].lng],
+            14
+        );
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        places.forEach(place => {
+            L.marker([place.lat, place.lng])
+                .addTo(map)
+                .bindPopup(
+                    `<b>${place.name}</b><br>${place.distance} km away`
+                );
+        });
+    }
+</script>
+
+
+<!-- 🔹 RESULTS LIST -->
 {% for place in places %}
 <div class="card mb-3">
     <div class="card-body">
@@ -48,18 +88,16 @@
         <p>{{ place.address }}</p>
         <p><strong>{{ place.distance }} km away</strong></p>
 
-        <!-- 🔥 GOOGLE MAPS BUTTON -->
-        <a
-            href="https://www.google.com/maps/dir/?api=1&destination={{ place.latitude }},{{ place.longitude }}"
-            target="_blank"
-            class="btn btn-success mt-2"
-        >
+        <a href="https://www.google.com/maps/dir/?api=1&destination={{ place.latitude }},{{ place.longitude }}"
+            target="_blank" class="btn btn-success">
             🗺️ Open in Google Maps
         </a>
     </div>
 </div>
-{% empty %}
-<p>No places found in selected distance.</p>
 {% endfor %}
+
+{% else %}
+<p>No places found in selected distance.</p>
+{% endif %}
 
 {% endblock %}
