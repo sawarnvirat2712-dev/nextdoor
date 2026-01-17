@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- 🔹 1. PAGE TITLE -->
+<h2>{{ category|title }} Near You</h2>
+
+<!-- 🔹 2. DISTANCE + LOCATION FORM -->
+<form method="POST" onsubmit="return checkLocation();">
+    {% csrf_token %}
+
+    <label>Show results within (km)</label>
+    <input type="number" name="distance" required min="1" class="form-control mb-2">
+
+    <!-- hidden fields for location -->
+    <input type="hidden" name="lat" id="lat">
+    <input type="hidden" name="lng" id="lng">
+
+    <button class="btn btn-primary">Find</button>
+</form>
+
+<!-- 🔹 3. GEOLOCATION SCRIPT (KEEP IT HERE) -->
+<script>
+    navigator.geolocation.getCurrentPosition(function (position) {
+        document.getElementById("lat").value = position.coords.latitude;
+        document.getElementById("lng").value = position.coords.longitude;
+    });
+    function checkLocation() {
+    const lat = document.getElementById("lat").value;
+    const lng = document.getElementById("lng").value;
+
+    if (!lat || !lng) {
+        alert("Please allow location access to continue.");
+        return false; // ❌ STOP form submit
+    }
+    return true; // ✅ allow submit
+}
+</script>
+
+<hr>
+
+<!-- 🔹 4. RESULTS SECTION -->
+{% for place in places %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>{{ place.name }}</h5>
+        <p>{{ place.address }}</p>
+        <p><strong>{{ place.distance }} km away</strong></p>
+
+        <!-- 🔥 GOOGLE MAPS BUTTON -->
+        <a
+            href="https://www.google.com/maps/dir/?api=1&destination={{ place.latitude }},{{ place.longitude }}"
+            target="_blank"
+            class="btn btn-success mt-2"
+        >
+            🗺️ Open in Google Maps
+        </a>
+    </div>
+</div>
+{% empty %}
+<p>No places found in selected distance.</p>
+{% endfor %}
+
+{% endblock %}
