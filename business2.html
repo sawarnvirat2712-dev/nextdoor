@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Your Business</title>
+
+<!-- FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#b2f7ef,#d6fff6,#fff9c4);
+    display:flex;
+    justify-content:center;
+    padding:20px;
+}
+
+/* WATERMARK LOGO */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:url("logo.png") center/260px no-repeat;
+    opacity:0.05;
+    pointer-events:none;
+}
+
+.container{
+    width:100%;
+    max-width:480px;
+    background:rgba(255,255,255,0.9);
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.15);
+    animation:fadeUp .7s ease;
+}
+
+@keyframes fadeUp{
+    from{opacity:0;transform:translateY(25px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+h2{
+    text-align:center;
+    color:#006d77;
+    margin-bottom:10px;
+}
+
+label{
+    font-size:.85rem;
+    font-weight:600;
+    color:#333;
+}
+
+input,select{
+    width:100%;
+    margin-top:6px;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid #ccc;
+    font-size:.9rem;
+}
+
+input:focus,select:focus{
+    border-color:#00b4d8;
+    outline:none;
+}
+
+.form-group{margin-top:14px}
+
+/* GST STATUS */
+.gstin-status{
+    font-size:.75rem;
+    margin-top:4px;
+    font-weight:600;
+}
+.valid{color:green}
+.invalid{color:red}
+
+/* 24H TOGGLE */
+.toggle{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+}
+
+/* WORKING DAYS */
+.days{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:8px;
+}
+.days label{
+    background:#e0f7fa;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:.75rem;
+    cursor:pointer;
+}
+
+/* PREVIEW CARD */
+.preview{
+    margin-top:18px;
+    background:#fff;
+    border-radius:16px;
+    padding:14px;
+    box-shadow:0 10px 20px rgba(0,0,0,.1);
+}
+
+.preview img{
+    width:70px;
+    height:70px;
+    object-fit:cover;
+    border-radius:12px;
+}
+
+/* VERIFIED BADGE */
+.badge{
+    background:#1da1f2;
+    color:white;
+    font-size:.65rem;
+    padding:3px 7px;
+    border-radius:999px;
+    font-weight:600;
+}
+
+/* BUTTON */
+button{
+    width:100%;
+    margin-top:18px;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,#00b4d8,#0077b6);
+    color:white;
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer;
+}
+
+/* SKELETON */
+.skeleton{
+    height:80px;
+    background:linear-gradient(90deg,#eee,#f5f5f5,#eee);
+    animation:shimmer 1.2s infinite;
+    border-radius:12px;
+    margin-top:14px;
+    display:none;
+}
+@keyframes shimmer{
+    0%{background-position:-200px}
+    100%{background-position:200px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Register Your Business</h2>
+
+<!-- BUSINESS FORM -->
+<div class="form-group">
+    <label>Business Name</label>
+    <input id="name" oninput="updatePreview()">
+</div>
+
+<div class="form-group">
+    <label>Category</label>
+    <select id="category" onchange="updatePreview()">
+        <option value="">Select Category</option>
+        <option>PG / Hostel</option>
+        <option>Mess / Tiffin</option>
+        <option>Medical Store</option>
+        <option>Stationery</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label>GSTIN</label>
+    <input id="gstin" maxlength="15" oninput="validateGST()">
+    <div id="gstStatus" class="gstin-status"></div>
+</div>
+
+<div class="form-group">
+    <label>Opening Time</label>
+    <input type="time" id="openTime" onchange="updatePreview()">
+</div>
+
+<div class="form-group">
+    <label>Closing Time</label>
+    <input type="time" id="closeTime" onchange="updatePreview()">
+</div>
+
+<div class="toggle">
+    <input type="checkbox" id="allDay" onchange="toggle24()">
+    <label>Open 24 Hours</label>
+</div>
+
+<div class="form-group">
+    <label>Working Days</label>
+    <div class="days">
+        <label><input type="checkbox"> Mon</label>
+        <label><input type="checkbox"> Tue</label>
+        <label><input type="checkbox"> Wed</label>
+        <label><input type="checkbox"> Thu</label>
+        <label><input type="checkbox"> Fri</label>
+        <label><input type="checkbox"> Sat</label>
+        <label><input type="checkbox"> Sun</label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label>Business Logo</label>
+    <input type="file" accept="image/*" onchange="logoPreview(event)">
+</div>
+
+<!-- MAP PREVIEW -->
+<div class="form-group">
+    <label>Location Preview</label>
+    <input value="📍 Location will be auto-detected" disabled>
+</div>
+
+<!-- LIVE PREVIEW CARD -->
+<div class="preview" id="previewCard">
+    <div style="display:flex;gap:12px;align-items:center">
+        <img id="logoPrev" src="">
+        <div>
+            <strong id="pName">Business Name</strong>
+            <span class="badge">Pending</span>
+            <div id="pCat" style="font-size:.8rem;color:#555"></div>
+            <div id="pTime" style="font-size:.75rem"></div>
+        </div>
+    </div>
+</div>
+
+<div class="skeleton" id="loader"></div>
+
+<button onclick="submitForm()">Submit for Approval</button>
+
+</div>
+
+<script>
+function validateGST(){
+    const gst=document.getElementById("gstin").value.toUpperCase();
+    const regex=/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    const status=document.getElementById("gstStatus");
+    if(!gst){status.innerHTML="";return;}
+    if(regex.test(gst)){
+        status.innerHTML="✔ Valid GSTIN";
+        status.className="gstin-status valid";
+    }else{
+        status.innerHTML="✖ Invalid GSTIN";
+        status.className="gstin-status invalid";
+    }
+}
+
+function toggle24(){
+    const checked=document.getElementById("allDay").checked;
+    document.getElementById("openTime").disabled=checked;
+    document.getElementById("closeTime").disabled=checked;
+    updatePreview();
+}
+
+function updatePreview(){
+    document.getElementById("pName").innerText =
+        document.getElementById("name").value || "Business Name";
+    document.getElementById("pCat").innerText =
+        document.getElementById("category").value;
+
+    if(document.getElementById("allDay").checked){
+        document.getElementById("pTime").innerText="🕒 Open 24 Hours";
+    }else{
+        document.getElementById("pTime").innerText=
+            document.getElementById("openTime").value+" - "+
+            document.getElementById("closeTime").value;
+    }
+}
+
+function logoPreview(e){
+    document.getElementById("logoPrev").src =
+        URL.createObjectURL(e.target.files[0]);
+}
+
+function submitForm(){
+    document.getElementById("loader").style.display="block";
+    setTimeout(()=>{
+        document.getElementById("loader").style.display="none";
+        alert("Business submitted for admin approval");
+    },2000);
+}
+</script>
+
+</body>
+</html>
