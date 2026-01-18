@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
-{% block navbar %}{% endblock %}
+{block navbar}{endblock}
+
 {% block content %}
 
 <style>
@@ -126,9 +127,9 @@
             <button class="btn btn-primary w-100">Login</button>
         </form>
         <p class="mt-3 text-muted">
-    Don’t have an account?
-    <a href="{% url 'signup' %}">Sign up</a>
-</p>
+            Don’t have an account?
+            <a href="{% url 'signup' %}">Sign up</a>
+        </p>
 
 
     </div>

@@ -1,103 +1,208 @@
 {% extends "base.html" %}
-{% load static %}
+
 
 {% block content %}
 
-<h2 class="mb-3">{{ category|title }} Near You</h2>
-
-<!-- 🔹 DISTANCE + LOCATION FORM -->
-<form method="POST" onsubmit="return checkLocation();" class="mb-4">
-    {% csrf_token %}
-
-    <label class="form-label">Show results within (km)</label>
-    <input type="number" name="distance" required min="1" class="form-control mb-2">
-
-    <input type="hidden" name="lat" id="lat">
-    <input type="hidden" name="lng" id="lng">
-
-    <button class="btn btn-primary mt-2">Find</button>
-</form>
-
-<!-- 🔹 GEOLOCATION -->
-<script>
-    navigator.geolocation.getCurrentPosition(
-        function (position) {
-            document.getElementById("lat").value = position.coords.latitude;
-            document.getElementById("lng").value = position.coords.longitude;
-        },
-        function () {
-            alert("Location access is required to find nearby services.");
-        }
-    );
-
-    function checkLocation() {
-        const lat = document.getElementById("lat").value;
-        const lng = document.getElementById("lng").value;
-
-        if (!lat || !lng) {
-            alert("Please allow location access to continue.");
-            return false;
-        }
-        return true;
+<style>
+    /* 🔹 PAGE WRAPPER */
+    .place-wrapper {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #b2f7ef, #d6fff6, #fff9c4);
+        padding: 20px;
     }
-</script>
 
-{% if places %}
-<hr>
+    /* 🔹 CARD CONTAINER */
+    .place-container {
+        max-width: 520px;
+        margin: auto;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 22px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        animation: fadeUp 0.8s ease;
+    }
 
-<!-- 🔹 MAP PREVIEW -->
-<div id="map" style="height: 400px; border-radius: 12px;" class="mb-4"></div>
+    /* 🔹 ANIMATION */
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(25px);
+        }
 
-<script>
-    const places = [];
-    {% for place in places %}
-    places.push({
-        name: "{{ place.name|default:''|escapejs }}",
-        lat: {{ place.latitude }},
-        lng: {{ place.longitude }},
-        distance: {{ place.distance }}
-});
-    {% endfor %}
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-    if (places.length > 0) {
-        const map = L.map('map').setView(
-            [places[0].lat, places[0].lng],
-            14
-        );
+    /* 🔹 HEADER */
+    .place-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+    .place-header h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #006d77;
+    }
 
-        places.forEach(place => {
-            L.marker([place.lat, place.lng])
-                .addTo(map)
-                .bindPopup(
-                    `<b>${place.name}</b><br>${place.distance} km away`
-                );
+    /* 🔹 FORM */
+    label {
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid #ccc;
+        margin-bottom: 12px;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        border-radius: 14px;
+        border: none;
+        background: linear-gradient(135deg, #00b4d8, #0077b6);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    /* 🔹 MAP */
+    #map {
+        height: 350px;
+        border-radius: 14px;
+        margin-bottom: 20px;
+    }
+
+    /* 🔹 RESULT CARD */
+    .place-card {
+        background: white;
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .place-card h5 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* 🔹 VERIFIED BADGE */
+    .verified {
+        background: #1da1f2;
+        color: white;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-weight: 600;
+        box-shadow: 0 0 10px rgba(29, 161, 242, 0.6);
+    }
+</style>
+
+<div class="place-wrapper">
+    <div class="place-container">
+
+        <!-- 🔹 HEADER -->
+        <div class="place-header">
+            <h2>{{ category|title }} Near You</h2>
+        </div>
+
+        <!-- 🔹 DISTANCE FORM -->
+        <form method="POST" onsubmit="return checkLocation();">
+            {% csrf_token %}
+
+            <label>Show results within (km)</label>
+            <input type="number" name="distance" min="1" required>
+
+            <input type="hidden" name="lat" id="lat">
+            <input type="hidden" name="lng" id="lng">
+
+            <button>Find</button>
+        </form>
+
+        <!-- 🔹 GEOLOCATION -->
+        <script>
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    document.getElementById("lat").value = position.coords.latitude;
+                    document.getElementById("lng").value = position.coords.longitude;
+
+                    console.log("USER LOCATION:",
+                        position.coords.latitude,
+                        position.coords.longitude
+                    );
+                },
+                function (error) {
+                    alert("Location error: " + error.message);
+                },
+                {
+                    enableHighAccuracy: true,   // 🔥 KEY FIX
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        </script>
+
+
+        {% if places %}
+        <hr>
+
+        <!-- 🔹 MAP -->
+        <div id="map"></div>
+
+        <script>
+            const places = [];
+            {% for place in places %}
+            places.push({
+                name: "{{ place.name|escapejs }}",
+                lat: {{ place.latitude }},
+                lng: {{ place.longitude }},
+                distance: {{ place.distance }}
         });
-    }
-</script>
+            {% endfor %}
 
+            const map = L.map('map').setView([places[0].lat, places[0].lng], 14);
 
-<!-- 🔹 RESULTS LIST -->
-{% for place in places %}
-<div class="card mb-3">
-    <div class="card-body">
-        <h5>{{ place.name }}</h5>
-        <p>{{ place.address }}</p>
-        <p><strong>{{ place.distance }} km away</strong></p>
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
 
-        <a href="https://www.google.com/maps/dir/?api=1&destination={{ place.latitude }},{{ place.longitude }}"
-            target="_blank" class="btn btn-success">
-            🗺️ Open in Google Maps
-        </a>
+            places.forEach(place => {
+                L.marker([place.lat, place.lng])
+                    .addTo(map)
+                    .bindPopup(`<b>${place.name}</b><br>${place.distance} km away`);
+            });
+        </script>
+
+        <!-- 🔹 RESULTS -->
+        {% for place in places %}
+        <div class="place-card">
+            <h5>
+                {{ place.name }}
+                <span class="verified">✔ Verified</span>
+            </h5>
+            <p>{{ place.address }}</p>
+            <p><strong>{{ place.distance }} km away</strong></p>
+
+            <a href="https://www.google.com/maps/dir/?api=1&destination={{ place.latitude }},{{ place.longitude }}"
+                target="_blank" class="btn btn-success btn-sm">
+                🗺️ Open in Google Maps
+            </a>
+        </div>
+        {% endfor %}
+
+        {% else %}
+        <p class="text-center mt-3">No places found in selected distance.</p>
+        {% endif %}
+
     </div>
 </div>
-{% endfor %}
-
-{% else %}
-<p>No places found in selected distance.</p>
-{% endif %}
 
 {% endblock %}

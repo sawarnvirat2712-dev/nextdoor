@@ -6,4 +6,8 @@ urlpatterns = [
     path("services/", include("services.urls")),  # 👈 DASHBOARD APP
     path("", include("users.urls")), 
     path("locations/", include("locations.urls")),
+    path("business/", include("business.urls")),
+    path("", include("locations.urls")),
+
+    
 ]
