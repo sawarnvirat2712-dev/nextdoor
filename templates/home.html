@@ -1,173 +1,166 @@
 {% extends "base.html" %}
+
 {% load static %}
+
+
+
+
 {% block content %}
-
-
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-    body {
-        height: 100vh;
+    * {
         margin: 0;
-        background: linear-gradient(135deg, #1bbfb3, #9be7c4, #ffe08a);
-        font-family: "Segoe UI", sans-serif;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
     }
 
+    /* PAGE BACKGROUND (HOME PAGE SCHEME) */
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1fc8b8, #8be9c1, #ffe28a);
+        color: #0b3d3a;
+    }
 
-    .home-wrapper {
+    /* TOP NAV LOGO */
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        max-width: 1000px;
-        text-align: center;
+        padding: 18px 40px;
+        display: flex;
+        align-items: center;
+        z-index: 100;
+    }
+
+    .navbar img {
+        height: 42px;
+    }
+
+    /* HERO */
+    .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 120px 8% 40px;
+    }
+
+    /* CONTENT */
+    .hero-content {
+        max-width: 560px;
     }
 
     /* TITLE */
-    .home-title {
-        font-family: 'Poppins', sans-serif;
-        font-size: 44px;
+    .hero-content h1 {
+        font-size: 3.4rem;
         font-weight: 700;
-        color: #0f4f47;
-        margin-bottom: 5px;
+        margin-bottom: 14px;
     }
 
-    .home-subtitle {
-        font-size: 16px;
-        font-style: italic;
-        color: rgba(15, 79, 71, 0.8);
-        margin-bottom: 40px;
+    /* DESCRIPTION */
+    .hero-content p {
+        font-size: 1.05rem;
+        color: #134e4a;
+        margin-bottom: 32px;
     }
 
-    /* OPTIONS CONTAINER */
-    .options-box {
-        background: rgba(255, 255, 255, 0.3);
-        backdrop-filter: blur(14px);
-        border-radius: 24px;
-        padding: 50px;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-    }
-
-    /* GRID */
-    .options-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 200px);
-        gap: 30px;
-        justify-content: center;
-    }
-
-    /* OPTION CARD */
-    .option-card {
-        position: relative;
-        height: 140px;
-        border-radius: 20px;
-        overflow: hidden;
-
+    /* BUTTONS */
+    .hero-buttons {
         display: flex;
-        align-items: center;
-        justify-content: center;
+        gap: 18px;
+        margin-bottom: 26px;
+    }
 
-        font-size: 18px;
+    .hero-buttons a {
+        padding: 14px 30px;
+        border-radius: 999px;
+        font-size: 0.95rem;
         font-weight: 600;
-        color: #0f3f3a;
-
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .option-card:hover {
-        transform: translateY(-8px) scale(1.05);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-    }
-
-    /* CENTERED BACKGROUND ICON */
-    .option-card i {
-        position: absolute;
-        font-size: 90px;
         text-decoration: none;
-        opacity: 0.2;
-        color: rgba(0, 0, 0, 0.3);
-
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-
-        pointer-events: none;
+        transition: 0.3s;
     }
 
-    /* TEXT ABOVE ICON */
-    .option-text {
-        position: relative;
-        z-index: 2;
+    /* SIGN UP */
+    .btn-signup {
+        background: #ffffff;
+        color: #0b3d3a;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
 
-    /* COLOR VARIANTS */
-    .bg-teal {
-        background: linear-gradient(135deg, #2fb7a4, #8ee5d6);
+    .btn-signup:hover {
+        transform: translateY(-2px);
     }
 
-    .bg-green {
-        background: linear-gradient(135deg, #7ee2b8, #c5f3d8);
+    /* LOGIN */
+    .btn-login {
+        background: linear-gradient(135deg, #ff8a00, #ffb347);
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
 
-    .bg-yellow {
-        background: linear-gradient(135deg, #ffe08a, #fff1bf);
+    .btn-login:hover {
+        transform: translateY(-2px);
     }
 
-    .bg-blue {
-        background: linear-gradient(135deg, #7fd3ff, #cbeeff);
+    /* FEATURE LINES */
+    .features p {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+        color: #145c55;
     }
 
     /* RESPONSIVE */
-    @media (max-width: 768px) {
-        .options-grid {
-            grid-template-columns: repeat(2, 160px);
+    @media(max-width:768px) {
+        .hero {
+            justify-content: center;
+            text-align: center;
         }
 
-        .option-card {
-            height: 120px;
+        .hero-buttons {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar {
+            justify-content: center;
         }
     }
 </style>
+</head>
 
+<body>
 
-<div class="home-wrapper">
-
-    <!-- TITLE -->
-    <h1 class="home-title">Welcome to NextDoor</h1>
-    <p class="home-subtitle">Closer Than You Think.</p>
-
-    <!-- OPTIONS -->
-    <div class="options-box">
-        <div class="options-grid">
-
-            <a href="/locations/pg/" class="option-card bg-teal">
-                <i class="bi bi-house-door-fill"></i>
-                <div class="option-text">PG / Hostel</div>
-            </a>
-            <a href="/locations/mess/" class="option-card bg-green">
-                <i class="bi bi-cup-hot-fill"></i>
-                <div class="option-text">Mess / Tiffin</div>
-            </a>
-
-
-            <a href="/locations/medical/" class="option-card bg-yellow">
-                <i class="bi bi-heart-pulse-fill"></i>
-                <div class="option-text">Medical Store</div>
-            </a>
-
-            <a href="/locations/stationery/" class="option-card bg-blue">
-                <i class="bi bi-pencil-fill"></i>
-                <div class="option-text">Stationery</div>
-            </a>
-
-        </div>
+    <!-- TOP LEFT LOGO (VISIBLE & FIXED) -->
+    <div class="navbar">
+        <img src="{% static 'assets/logo.png' %}" alt="NextDoor Logo">
     </div>
 
-</div>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
 
+            <h1>NextDoor</h1>
 
+            <p>
+                Find services near you conveniently and travel to new places feeling like home
+            </p>
+
+            <div class="hero-buttons">
+                <a href="/signup" class="btn-signup">Sign Up</a>
+                <a href="/login" class="btn-login">Log In</a>
+            </div>
+
+            <div class="features">
+                <p>• Discover verified nearby services</p>
+                <p>• Travel-friendly local experiences</p>
+                <p>• Built for comfort, safety & convenience</p>
+            </div>
+
+        </div>
+    </section>
+</body>
 
 
 

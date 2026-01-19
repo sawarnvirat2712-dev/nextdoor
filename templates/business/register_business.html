@@ -2,218 +2,258 @@
 {% load static %}
 
 {% block content %}
+
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-    }
+.container{
+    width:100%;
+    max-width:480px;
+    background:#fff;
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.15);
+}
 
-    body {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #b2f7ef, #d6fff6, #fff9c4);
-        display: flex;
-        justify-content: center;
-        padding: 20px;
-    }
+h2{
+    text-align:center;
+    color:#006d77;
+    margin-bottom:12px;
+}
 
-    body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background: url("logo.png") center/260px no-repeat;
-        opacity: 0.05;
-        pointer-events: none;
-    }
+label{
+    font-size:.85rem;
+    font-weight:600;
+    color:#333;
+}
 
-    .container {
-        width: 100%;
-        max-width: 480px;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 22px;
-        padding: 22px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        animation: fadeUp .7s ease;
-    }
+input, select, textarea{
+    width:100%;
+    margin-top:6px;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid #ccc;
+    font-size:.9rem;
+}
 
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(25px) }
-        to { opacity: 1; transform: translateY(0) }
-    }
+textarea{ resize:none }
 
-    h2 {
-        text-align: center;
-        color: #006d77;
-        margin-bottom: 10px;
-    }
+input:focus, select:focus, textarea:focus{
+    border-color:#00b4d8;
+    outline:none;
+}
 
-    label {
-        font-size: .85rem;
-        font-weight: 600;
-        color: #333;
-    }
+.form-group{ margin-top:14px }
 
-    input, select {
-        width: 100%;
-        margin-top: 6px;
-        padding: 12px;
-        border-radius: 12px;
-        border: 1px solid #ccc;
-        font-size: .9rem;
-    }
+/* GST */
+.gstin-status{
+    font-size:.75rem;
+    font-weight:600;
+    margin-top:4px;
+}
+.valid{ color:green }
+.invalid{ color:red }
 
-    input:focus, select:focus {
-        border-color: #00b4d8;
-        outline: none;
-    }
+/* DAYS */
+.days{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:8px;
+}
+.days label{
+    background:#e0f7fa;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:.75rem;
+}
 
-    .form-group {
-        margin-top: 14px;
-    }
+/* TOGGLE */
+.toggle{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+}
 
-    .gstin-status {
-        font-size: .75rem;
-        margin-top: 4px;
-        font-weight: 600;
-    }
+button{
+    width:100%;
+    margin-top:18px;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,#00b4d8,#0077b6);
+    color:white;
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer;
+}
 
-    .valid { color: green }
-    .invalid { color: red }
+.secondary{
+    background:linear-gradient(135deg,#adb5bd,#6c757d);
+}
 
-    .toggle {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 10px;
-    }
-
-    .days {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 8px;
-    }
-
-    .days label {
-        background: #e0f7fa;
-        padding: 6px 10px;
-        border-radius: 999px;
-        font-size: .75rem;
-        cursor: pointer;
-    }
-
-    button {
-        width: 100%;
-        margin-top: 18px;
-        padding: 14px;
-        border: none;
-        border-radius: 14px;
-        background: linear-gradient(135deg, #00b4d8, #0077b6);
-        color: white;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-    }
+.note{
+    font-size:.75rem;
+    color:#555;
+    margin-top:6px;
+}
 </style>
 
 <div class="container">
 
-    <h2>Register Your Business</h2>
+<h2>Register Your Business</h2>
 
-    <form method="POST">
-        {% csrf_token %}
+<form method="POST" onsubmit="return validateForm()">
+{% csrf_token %}
 
-        <!-- BUSINESS NAME -->
-        <div class="form-group">
-            <label>Business Name</label>
-            <input name="business_name" required>
-        </div>
+<!-- BUSINESS NAME -->
+<div class="form-group">
+    <label>Business Name</label>
+    <input name="business_name" required>
+</div>
 
-        <!-- CATEGORY -->
-        <div class="form-group">
-            <label>Category</label>
-            <select name="category" required>
-                <option value="">Select Category</option>
-                <option value="pg">PG / Hostel</option>
-                <option value="mess">Mess / Tiffin</option>
-                <option value="medical">Medical Store</option>
-                <option value="stationery">Stationery</option>
-            </select>
-        </div>
+<!-- CATEGORY -->
+<div class="form-group">
+    <label>Category</label>
+    <select name="category" required>
+        <option value="">Select Category</option>
+        <option value="pg">PG / Hostel</option>
+        <option value="mess">Mess / Tiffin</option>
+        <option value="medical">Medical Store</option>
+        <option value="stationery">Stationery</option>
+    </select>
+</div>
 
-        <!-- GSTIN -->
-        <div class="form-group">
-            <label>GSTIN</label>
-            <input name="gstin" maxlength="15" required oninput="validateGST()">
-            <div id="gstStatus" class="gstin-status"></div>
-        </div>
+<!-- GSTIN -->
+<div class="form-group">
+    <label>GSTIN</label>
+    <input name="gstin" id="gstin" maxlength="15" oninput="validateGST(this)">
+    <div id="gstStatus" class="gstin-status"></div>
+</div>
 
-        <!-- OPEN / CLOSE TIME -->
-        <div class="form-group">
-            <label>Opening Time</label>
-            <input type="time" name="open_time" id="openTime">
-        </div>
+<!-- WORKING DAYS -->
+<div class="form-group">
+    <label>Working Days</label>
+    <div class="days">
+        <label><input type="checkbox" name="working_days" value="Mon"> Mon</label>
+        <label><input type="checkbox" name="working_days" value="Tue"> Tue</label>
+        <label><input type="checkbox" name="working_days" value="Wed"> Wed</label>
+        <label><input type="checkbox" name="working_days" value="Thu"> Thu</label>
+        <label><input type="checkbox" name="working_days" value="Fri"> Fri</label>
+        <label><input type="checkbox" name="working_days" value="Sat"> Sat</label>
+        <label><input type="checkbox" name="working_days" value="Sun"> Sun</label>
+    </div>
+</div>
 
-        <div class="form-group">
-            <label>Closing Time</label>
-            <input type="time" name="close_time" id="closeTime">
-        </div>
+<!-- TIMINGS -->
+<div class="form-group">
+    <label>Opening Time</label>
+    <input type="time" name="open_time" id="openTime">
+</div>
 
-        <!-- 24 HOURS -->
-        <div class="toggle">
-            <input type="checkbox" name="open_24_hours" id="allDay" onchange="toggle24()">
-            <label>Open 24 Hours</label>
-        </div>
+<div class="form-group">
+    <label>Closing Time</label>
+    <input type="time" name="close_time" id="closeTime">
+</div>
 
-        <!-- WORKING DAYS -->
-        <div class="form-group">
-            <label>Working Days</label>
-            <div class="days">
-                <label><input type="checkbox" name="working_days" value="Mon"> Mon</label>
-                <label><input type="checkbox" name="working_days" value="Tue"> Tue</label>
-                <label><input type="checkbox" name="working_days" value="Wed"> Wed</label>
-                <label><input type="checkbox" name="working_days" value="Thu"> Thu</label>
-                <label><input type="checkbox" name="working_days" value="Fri"> Fri</label>
-                <label><input type="checkbox" name="working_days" value="Sat"> Sat</label>
-                <label><input type="checkbox" name="working_days" value="Sun"> Sun</label>
-            </div>
-        </div>
+<div class="toggle">
+    <input type="checkbox" id="allDay" name="open_24_hours" onchange="toggle24(this)">
+    <label>Open 24 Hours</label>
+</div>
 
-        <!-- LOCATION -->
-        <input type="hidden" name="latitude" id="lat">
-        <input type="hidden" name="longitude" id="lng">
+<!-- ADDRESS -->
+<div class="form-group">
+    <label>Business Address</label>
+    <textarea name="address" id="address"
+        placeholder="Auto-filled using latitude & longitude"></textarea>
+</div>
 
-        <button type="submit">Submit for Approval</button>
-    </form>
+<!-- LOCATION -->
+<div class="form-group">
+    <label>Latitude</label>
+    <input name="latitude" id="lat">
+</div>
 
+<div class="form-group">
+    <label>Longitude</label>
+    <input name="longitude" id="lng">
+</div>
+
+<div class="note">
+    Address auto-detects when both latitude & longitude are available.
+</div>
+
+<button type="button" class="secondary" onclick="detectLocation()">📍 Auto Detect Location</button>
+<button type="submit">Submit for Approval</button>
+
+</form>
 </div>
 
 <script>
-function validateGST(){
-    const gst=document.querySelector('[name="gstin"]').value.toUpperCase();
-    const regex=/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+let gstValid=false;
+
+const latInput=document.getElementById("lat");
+const lngInput=document.getElementById("lng");
+
+/* GST VALIDATION */
+function validateGST(el){
+    const regex=/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
     const status=document.getElementById("gstStatus");
-    if(!gst){status.innerHTML="";return;}
-    if(regex.test(gst)){
+
+    if(!el.value){
+        status.innerHTML="";
+        gstValid=false;
+        return;
+    }
+    if(regex.test(el.value.toUpperCase())){
         status.innerHTML="✔ Valid GSTIN";
         status.className="gstin-status valid";
+        gstValid=true;
     }else{
         status.innerHTML="✖ Invalid GSTIN";
         status.className="gstin-status invalid";
+        gstValid=false;
     }
 }
 
-function toggle24(){
-    const checked=document.getElementById("allDay").checked;
-    document.getElementById("openTime").disabled=checked;
-    document.getElementById("closeTime").disabled=checked;
+/* 24 HOUR TOGGLE */
+function toggle24(el){
+    openTime.disabled = el.checked;
+    closeTime.disabled = el.checked;
 }
 
-navigator.geolocation.getCurrentPosition(pos=>{
-    document.getElementById("lat").value = pos.coords.latitude;
-    document.getElementById("lng").value = pos.coords.longitude;
-});
+/* AUTO LOCATION */
+function detectLocation(){
+    navigator.geolocation.getCurrentPosition(pos=>{
+        latInput.value = pos.coords.latitude.toFixed(6);
+        lngInput.value = pos.coords.longitude.toFixed(6);
+        fetchAddress();
+    });
+}
+
+latInput.addEventListener("input", fetchAddress);
+lngInput.addEventListener("input", fetchAddress);
+
+/* REVERSE GEOCODING */
+function fetchAddress(){
+    if(latInput.value && lngInput.value){
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latInput.value}&lon=${lngInput.value}`)
+        .then(res=>res.json())
+        .then(data=>{
+            if(data.display_name){
+                document.getElementById("address").value=data.display_name;
+            }
+        });
+    }
+}
+
+/* FINAL CHECK */
+function validateForm(){
+    if(!gstValid){
+        alert("Enter a valid GSTIN");
+        return false;
+    }
+    return true;
+}
 </script>
 
 {% endblock %}

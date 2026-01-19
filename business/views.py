@@ -13,7 +13,7 @@ def register_business(request):
             open_24_hours=bool(request.POST.get("open_24_hours")),
 
             working_days=request.POST.getlist("working_days"),
-
+            address = request.POST.get("address"),
             latitude=request.POST.get("latitude"),
             longitude=request.POST.get("longitude"),
         )
