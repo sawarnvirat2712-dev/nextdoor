@@ -129,26 +129,53 @@
 
         <!-- 🔹 GEOLOCATION -->
         <script>
-            navigator.geolocation.getCurrentPosition(
-                function (position) {
+            let locationAttempts = 0;
+            const MAX_ATTEMPTS = 3;
+            const REQUIRED_ACCURACY = 100; // meters (good accuracy)
+
+            function getAccurateLocation() {
+
+                navigator.geolocation.getCurrentPosition(
+                    success,
+                    error,
+                    {
+                        enableHighAccuracy: true,   // 🔥 FORCE GPS
+                        timeout: 15000,             // wait longer for GPS lock
+                        maximumAge: 0               // ❌ no cached location
+                    }
+                );
+
+                function success(position) {
+                    const accuracy = position.coords.accuracy;
+
+                    console.log("Accuracy:", accuracy, "meters");
+
+                    // ❌ Reject inaccurate readings
+                    if (accuracy > REQUIRED_ACCURACY && locationAttempts < MAX_ATTEMPTS) {
+                        locationAttempts++;
+                        setTimeout(getAccurateLocation, 1500); // retry automatically
+                        return;
+                    }
+
+                    // ✅ ACCEPT LOCATION
                     document.getElementById("lat").value = position.coords.latitude;
                     document.getElementById("lng").value = position.coords.longitude;
 
-                    console.log("USER LOCATION:",
+                    console.log("FINAL LOCATION:",
                         position.coords.latitude,
                         position.coords.longitude
                     );
-                },
-                function (error) {
-                    alert("Location error: " + error.message);
-                },
-                {
-                    enableHighAccuracy: true,   // 🔥 KEY FIX
-                    timeout: 10000,
-                    maximumAge: 0
                 }
-            );
+
+                function error(err) {
+                    alert("Location error: " + err.message);
+                }
+            }
+
+            // 🔹 Call once on page load
+            getAccurateLocation();
         </script>
+
 
 
         {% if places %}
