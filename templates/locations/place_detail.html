@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ place.name }}</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#b2f7ef,#d6fff6,#fff9c4);
+    padding:18px;
+}
+
+/* ================= CONTAINER ================= */
+.container{
+    max-width:540px;
+    margin:auto;
+    background:rgba(255,255,255,.95);
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 20px 40px rgba(0,0,0,.15);
+    animation:fadeUp .6s ease;
+}
+
+@keyframes fadeUp{
+    from{opacity:0;transform:translateY(20px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+/* ================= HEADER ================= */
+h2{
+    color:#006d77;
+    margin-bottom:6px;
+}
+
+.badges{
+    display:flex;
+    gap:8px;
+    margin-bottom:12px;
+}
+
+.badge{
+    font-size:.7rem;
+    padding:4px 10px;
+    border-radius:999px;
+    font-weight:600;
+}
+
+.verified{background:#1da1f2;color:#fff}
+.open{background:#2ecc71;color:#fff}
+.closed{background:#e74c3c;color:#fff}
+.closing{background:#f39c12;color:#fff}
+
+/* ================= INFO ================= */
+.info p{
+    font-size:.85rem;
+    margin-top:6px;
+    color:#444;
+}
+
+/* ================= MAP ================= */
+iframe{
+    width:100%;
+    height:240px;
+    border-radius:14px;
+    border:none;
+    margin:16px 0;
+}
+
+/* ================= RATING ================= */
+.rating{
+    margin-top:10px;
+}
+
+.stars{
+    display:flex;
+    gap:6px;
+    font-size:1.6rem;
+    cursor:pointer;
+}
+
+.stars span{
+    color:#ccc;
+    transition:.2s;
+}
+
+.stars span.active{
+    color:#f1c40f;
+}
+
+.rating-info{
+    font-size:.8rem;
+    margin-top:4px;
+}
+
+/* ================= BUTTONS ================= */
+button, .map-btn{
+    width:100%;
+    margin-top:12px;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,#00b4d8,#0077b6);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    text-decoration:none;
+    display:block;
+    text-align:center;
+}
+
+/* ================= SKELETON ================= */
+.skeleton{
+    background:linear-gradient(90deg,#eee,#f5f5f5,#eee);
+    background-size:400% 100%;
+    animation:shimmer 1.2s infinite;
+    border-radius:12px;
+}
+
+@keyframes shimmer{
+    0%{background-position:100% 0}
+    100%{background-position:-100% 0}
+}
+
+.skel-title{height:28px;width:70%;margin-bottom:10px}
+.skel-text{height:14px;width:100%;margin-top:8px}
+.skel-map{height:240px;margin:16px 0}
+.skel-btn{height:44px;margin-top:10px}
+</style>
+</head>
+
+<body>
+
+<!-- ================= SKELETON ================= -->
+<div class="container" id="skeleton">
+    <div class="skeleton skel-title"></div>
+    <div class="skeleton skel-text"></div>
+    <div class="skeleton skel-text"></div>
+    <div class="skeleton skel-map"></div>
+    <div class="skeleton skel-btn"></div>
+    <div class="skeleton skel-btn"></div>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container" id="content" style="display:none;">
+
+    <h2>{{ place.name }}</h2>
+
+    <div class="badges">
+        <span class="badge verified">✔ Verified</span>
+        <span class="badge {{ status }}">{{ status|title }}</span>
+    </div>
+
+    <div class="info">
+        <p><strong>📍 Address:</strong> {{ place.address }}</p>
+        <p><strong>⏰ Timings:</strong>
+            {% if place.open_24_hours %}
+                Open 24 Hours
+            {% else %}
+                {{ place.open_time }} – {{ place.close_time }}
+            {% endif %}
+        </p>
+        <p><strong>📆 Working Days:</strong> {{ place.working_days|join:", " }}</p>
+        <p><strong>📞 Call us at:</strong> {{ place.phone }}</p>
+    </div>
+
+    <!-- MAP -->
+    <iframe
+        src="https://www.google.com/maps?q={{ place.latitude }},{{ place.longitude }}&z=15&output=embed">
+    </iframe>
+
+    <!-- OPEN MAP -->
+    <a class="map-btn"
+       href="https://www.google.com/maps/dir/?api=1&destination={{ place.latitude }},{{ place.longitude }}"
+       target="_blank">
+        🗺️ Open in Google Maps
+    </a>
+
+    <!-- RATING -->
+    <div class="rating">
+        <div class="stars" id="stars">
+            <span data-value="1">★</span>
+            <span data-value="2">★</span>
+            <span data-value="3">★</span>
+            <span data-value="4">★</span>
+            <span data-value="5">★</span>
+        </div>
+        <div class="rating-info">
+            ⭐ {{ avg_rating }} / 5 ({{ total_ratings }} reviews)
+        </div>
+    </div>
+
+    <!-- SUBMIT RATING -->
+    <form method="POST" action="{% url 'submit_rating' place.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="rating" id="ratingValue">
+        <button type="submit">Submit Rating</button>
+    </form>
+
+</div>
+
+<script>
+/* SKELETON SWITCH */
+window.onload=()=>{
+    setTimeout(()=>{
+        skeleton.style.display="none";
+        content.style.display="block";
+    },1200);
+};
+
+/* STAR LOGIC */
+const stars=document.querySelectorAll("#stars span");
+const ratingInput=document.getElementById("ratingValue");
+
+stars.forEach(star=>{
+    star.addEventListener("click",()=>{
+        const value=star.dataset.value;
+        ratingInput.value=value;
+        stars.forEach(s=>{
+            s.classList.toggle("active", s.dataset.value<=value);
+        });
+    });
+});
+</script>
+
+</body>
+</html>
+{% endblock %}

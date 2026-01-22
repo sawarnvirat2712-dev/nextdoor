@@ -70,3 +70,17 @@ class Place(models.Model):
         today: 'Mon', 'Tue', ...
         """
         return not self.working_days or today in self.working_days
+
+
+
+class Rating(models.Model):
+    place = models.ForeignKey(
+        Place,
+        on_delete=models.CASCADE,
+        related_name="ratings"
+    )
+    value = models.PositiveSmallIntegerField()  # 1–5
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.value}⭐ for {self.place.name}"
