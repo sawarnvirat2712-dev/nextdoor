@@ -1,8 +1,14 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+from django.contrib.auth.models import User
+from business.models import Business
 
 class Place(models.Model):
+    business = models.OneToOneField(
+        Business,
+        on_delete=models.CASCADE,
+        related_name="place"
+    )
 
     CATEGORY_CHOICES = [
         ('pg', 'PG / Hostel'),
@@ -11,76 +17,36 @@ class Place(models.Model):
         ('stationery', 'Stationery'),
     ]
 
-    WEEK_DAYS = [
-        ('Mon', 'Monday'),
-        ('Tue', 'Tuesday'),
-        ('Wed', 'Wednesday'),
-        ('Thu', 'Thursday'),
-        ('Fri', 'Friday'),
-        ('Sat', 'Saturday'),
-        ('Sun', 'Sunday'),
-    ]
-
-    # 🔹 BASIC INFO
     name = models.CharField(max_length=200)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
 
-    latitude = models.DecimalField(
-        max_digits=9,
-        decimal_places=6,
-        validators=[MinValueValidator(-90), MaxValueValidator(90)]
-    )
-    longitude = models.DecimalField(
-        max_digits=9,
-        decimal_places=6,
-        validators=[MinValueValidator(-180), MaxValueValidator(180)]
-    )
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
 
     address = models.TextField(blank=True)
     phone = models.CharField(max_length=15, blank=True)
 
-    # 🔹 BUSINESS TIMING
     open_time = models.TimeField(null=True, blank=True)
     close_time = models.TimeField(null=True, blank=True)
     open_24_hours = models.BooleanField(default=False)
 
-    # 🔹 WORKING DAYS (Mon–Sun)
-    working_days = models.JSONField(
-        default=list,
-        help_text="Example: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']"
-    )
+    working_days = models.JSONField(default=list)
 
-    # 🔹 STATUS
     is_verified = models.BooleanField(default=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ["name"]
-        indexes = [
-            models.Index(fields=["category"]),
-            models.Index(fields=["is_verified"]),
-        ]
-
     def __str__(self):
-        return f"{self.name} ({self.get_category_display()})"
-
-    def is_working_today(self, today):
-        """
-        today: 'Mon', 'Tue', ...
-        """
-        return not self.working_days or today in self.working_days
-
+        return self.name
 
 
 class Rating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     place = models.ForeignKey(
         Place,
         on_delete=models.CASCADE,
         related_name="ratings"
     )
-    value = models.PositiveSmallIntegerField()  # 1–5
-    created_at = models.DateTimeField(auto_now_add=True)
+    rating = models.IntegerField()
 
-    def __str__(self):
-        return f"{self.value}⭐ for {self.place.name}"
+    class Meta:
+        unique_together = ("user", "place")

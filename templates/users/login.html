@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
-{% block navbar %}{% endblock %}
 
 {% block content %}
+{% block navbar %}{% endblock %}
 
 <style>
     body {
         height: 100vh;
         margin: 0;
-        background-image: url("{% static 'assets/bg.png' %}");
+        background-image: url("{% static 'assets/bg.jpg' %}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -76,12 +76,13 @@
         font-size: 20px;
         font-weight: 600;
         margin-bottom: 25px;
-        color: #1f2933;
+        color: white;
     }
 
     .form-control {
         border-radius: 10px;
         padding: 10px;
+        
     }
 
     .btn-primary {
@@ -95,11 +96,17 @@
     .btn-primary:hover {
         background-color: #26a18f;
     }
+    .mb-3{
+        color: white;
+    }
+    .mt-3{
+        color: white;
+    }
 </style>
 <div class="login-wrapper">
     <div class="login-card">
 
-        <img src="{% static 'assets/logo.png' %}" class="logo" alt="NextDoor Logo">
+        <img src="{% static 'assets/lg.png' %}" class="logo" alt="NextDoor Logo">
 
         <p class="tagline">Closer Than You Think.</p>
 

@@ -10,15 +10,19 @@ from django.db.models import Avg, Count
 from .models import Place, Rating
 from .utils import get_open_status
 
+from django.contrib import messages
 
 
-@login_required(login_url="/accounts/login/")
+@login_required
+
 def service_access(request, category):
     if request.user.is_authenticated:
         return redirect("place_list", category=category)
 
     return redirect(f"/accounts/login/?next=/services/{category}/")
 
+
+@login_required
 
 def place_list(request, category):
     places = []
@@ -74,36 +78,41 @@ def place_list(request, category):
         "places": places,
         "category": category
     })
+
+
+@login_required
+
 def place_detail(request, place_id):
     place = get_object_or_404(Place, id=place_id)
 
-    # 🔹 Open / Closed / Closing Soon
-    status, _ = get_open_status(place)
+    avg_rating = place.ratings.aggregate(avg=Avg("rating"))["avg"] or 0
+    total_ratings = place.ratings.count()
 
-    # 🔹 Rating stats
-    rating_data = place.ratings.aggregate(
-        avg=Avg("value"),
-        total=Count("id")
-    )
+    user_has_rated = False
+    if request.user.is_authenticated:
+        user_has_rated = place.ratings.filter(user=request.user).exists()
 
-    avg_rating = round(rating_data["avg"], 1) if rating_data["avg"] else 0
-    total_ratings = rating_data["total"]
-
-    return render(request, "locations/place_detail.html", {
+    context = {
         "place": place,
-        "status": status,
-        "avg_rating": avg_rating,
-        "total_ratings": total_ratings
-    })
-def submit_rating(request, place_id):
-    if request.method == "POST":
-        place = get_object_or_404(Place, id=place_id)
-        rating_value = int(request.POST.get("rating", 0))
+        "avg_rating": round(avg_rating, 1),
+        "total_ratings": total_ratings,
+        "user_has_rated": user_has_rated,
+    }
 
-        if 1 <= rating_value <= 5:
-            Rating.objects.create(
-                place=place,
-                value=rating_value
-            )
+    return render(request, "locations/place_detail.html", context)
+
+
+@login_required
+def submit_rating(request, place_id):
+    place = get_object_or_404(Place, id=place_id)
+
+    if request.method == "POST":
+        rating_value = int(request.POST.get("rating"))
+
+        rating_obj, created = Rating.objects.update_or_create(
+            user=request.user,
+            place=place,
+            defaults={"rating": rating_value}
+        )
 
     return redirect("place_detail", place_id=place.id)

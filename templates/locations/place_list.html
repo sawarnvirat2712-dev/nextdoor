@@ -3,194 +3,225 @@
 
 {% block content %}
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-    /* 🔹 PAGE WRAPPER */
-    .place-wrapper {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #b2f7ef, #d6fff6, #fff9c4);
-        padding: 20px;
-    }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
 
-    /* 🔹 CARD CONTAINER */
-    .place-container {
-        max-width: 520px;
-        margin: auto;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 20px;
-        padding: 22px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        animation: fadeUp 0.8s ease;
-    }
+/* ===== PAGE BACKGROUND ===== */
+.page-wrapper {
+    min-height: 100vh;
+    background-image: url("{% static 'assets/bg.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
+}
 
-    @keyframes fadeUp {
-        from {
-            opacity: 0;
-            transform: translateY(25px);
-        }
+/* ===== GLASS CONTAINER ===== */
+.place-container {
+    max-width: 620px;
+    margin: auto;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(16px);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.15);
+    animation: fadeUp 0.6s ease;
+}
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 
-    .place-header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
+/* ===== HEADER ===== */
+.place-header {
+    text-align: center;
+    margin-bottom: 18px;
+}
 
-    .place-header h2 {
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: #006d77;
-    }
+.place-header h2 {
+    color: #5eead4;
+    font-weight: 700;
+    font-size: 1.6rem;
+}
 
-    label {
-        font-weight: 600;
-    }
+/* ===== FORM ===== */
+label {
+    color: #cbd5f5;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
 
-    input {
-        width: 100%;
-        padding: 12px;
-        border-radius: 12px;
-        border: 1px solid #ccc;
-        margin-bottom: 12px;
-    }
+input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    margin: 8px 0 14px;
+    background: rgba(255,255,255,0.95);
+}
 
-    button {
-        width: 100%;
-        padding: 14px;
-        border-radius: 14px;
-        border: none;
-        background: linear-gradient(135deg, #00b4d8, #0077b6);
-        color: white;
-        font-weight: 600;
-        cursor: pointer;
-    }
+button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, #22d3ee, #0ea5e9);
+    color: #002b36;
+    font-weight: 700;
+    cursor: pointer;
+}
 
-    #map {
-        height: 350px;
-        border-radius: 14px;
-        margin-bottom: 20px;
-    }
+/* ===== MAP ===== */
+#map {
+    height: 300px;
+    border-radius: 16px;
+    margin: 18px 0;
+    overflow: hidden;
+}
 
-    .place-card {
-        background: white;
-        border-radius: 16px;
-        padding: 16px;
-        margin-bottom: 15px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, .1);
-    }
+/* ===== PLACE CARD ===== */
+.place-card {
+    background: rgba(255,255,255,0.92);
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+    transition: transform 0.3s ease;
+}
 
-    .verified {
-        background: #1da1f2;
-        color: white;
-        font-size: .75rem;
-        padding: 4px 8px;
-        border-radius: 999px;
-        font-weight: 600;
-    }
+.place-card:hover {
+    transform: translateY(-4px);
+}
+
+.place-card h5 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.verified {
+    background: #22c55e;
+    color: white;
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.place-card p {
+    font-size: 0.8rem;
+    color: #334155;
+    margin-top: 6px;
+}
+
+/* MAP LINK */
+.map-link {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #22d3ee, #0ea5e9);
+    color: #002b36;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+}
 </style>
 
-<div class="place-wrapper">
+<div class="page-wrapper">
     <div class="place-container">
 
+        <!-- HEADER -->
         <div class="place-header">
             <h2>{{ category|title }} Near You</h2>
         </div>
 
-        <!-- 🔹 FORM -->
+        <!-- FILTER FORM -->
         <form method="POST">
             {% csrf_token %}
-            <label>Show results within (km)</label>
+            <label>Search radius (km)</label>
             <input type="number" name="distance" min="1" required>
 
             <input type="hidden" name="lat" id="lat">
             <input type="hidden" name="lng" id="lng">
 
-            <button>Find</button>
+            <button>Find Nearby</button>
         </form>
 
-        <!-- 🔹 SIMPLE & RELIABLE GEOLOCATION (LIKE OLD VERSION) -->
+        <!-- GEOLOCATION -->
         <script>
-            navigator.geolocation.getCurrentPosition(
-                function (position) {
-                    document.getElementById("lat").value = position.coords.latitude;
-                    document.getElementById("lng").value = position.coords.longitude;
-                },
-                function (error) {
-                    alert("Please allow location access to find nearby services.");
-                }
-            );
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                lat.value = pos.coords.latitude;
+                lng.value = pos.coords.longitude;
+            },
+            () => alert("Please allow location access")
+        );
         </script>
 
         {% if places %}
-        <hr>
-
-        <!-- 🔹 MAP -->
+        <!-- MAP -->
         <div id="map"></div>
 
         <script>
-            const places = [];
+        const places = [
             {% for place in places %}
-            places.push({
+            {
                 name: "{{ place.name|escapejs }}",
                 lat: {{ place.latitude }},
                 lng: {{ place.longitude }},
                 distance: {{ place.distance }}
-        });
+            },
             {% endfor %}
+        ];
 
-            const map = L.map('map').setView([places[0].lat, places[0].lng], 14);
+        const map = L.map('map').setView([places[0].lat, places[0].lng], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
-
-            places.forEach(place => {
-                L.marker([place.lat, place.lng])
-                    .addTo(map)
-                    .bindPopup(`<b>${place.name}</b><br>${place.distance} km away`);
-            });
+        places.forEach(p => {
+            L.marker([p.lat, p.lng])
+                .addTo(map)
+                .bindPopup(`<b>${p.name}</b><br>${p.distance} km away`);
+        });
         </script>
 
-
+        <!-- LIST -->
         {% for place in places %}
-        <a href="{% url 'place_detail' place.id %}" style="text-decoration:none;color:inherit;">
-
+        <a href="{% url 'place_detail' place.id %}" style="text-decoration:none;">
             <div class="place-card">
                 <h5>
                     {{ place.name }}
                     <span class="verified">✔ Verified</span>
                 </h5>
-
                 <p>{{ place.address }}</p>
                 <p><strong>{{ place.distance }} km away</strong></p>
 
-                <a href="https://www.google.com/maps/dir/?api=1&destination={{ place.latitude }},{{ place.longitude }}"
-                    target="_blank" style="
-        display:inline-block;
-        margin-top:8px;
-        padding:8px 12px;
-        background:#28a745;
-        color:white;
-        border-radius:8px;
-        font-size:0.85rem;
-        text-decoration:none;
-        font-weight:600;
-      ">
-                    🗺️ Open in Google Maps
+                <a class="map-link"
+                   href="https://www.google.com/maps/dir/?api=1&destination={{ place.latitude }},{{ place.longitude }}"
+                   target="_blank">
+                    🗺️ Open in Maps
                 </a>
             </div>
+        </a>
+        {% endfor %}
 
-            {% endfor %}
-
-            {% else %}
-            <p class="text-center mt-3">No places found.</p>
-            {% endif %}
+        {% else %}
+        <p style="text-align:center;color:#cbd5f5;margin-top:20px;">
+            No places found nearby.
+        </p>
+        {% endif %}
 
     </div>
 </div>
-</a>
 
 {% endblock %}

@@ -1,11 +1,8 @@
 {% extends "base.html" %}
-
 {% load static %}
 
-
-
-
 {% block content %}
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -14,24 +11,23 @@
         padding: 0;
         box-sizing: border-box;
         font-family: 'Poppins', sans-serif;
+
     }
 
-    /* PAGE BACKGROUND (HOME PAGE SCHEME) */
+    /* PAGE BACKGROUND */
     body {
         min-height: 100vh;
-        background: linear-gradient(135deg, #1fc8b8, #8be9c1, #ffe28a);
+        background-image: url("{% static 'assets/bg.jpg' %}");
         color: #0b3d3a;
     }
 
-    /* TOP NAV LOGO */
+    /* NAVBAR */
     .navbar {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         padding: 18px 40px;
-        display: flex;
-        align-items: center;
         z-index: 100;
     }
 
@@ -39,31 +35,37 @@
         height: 42px;
     }
 
-    /* HERO */
+    /* HERO LAYOUT */
     .hero {
         min-height: 100vh;
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        /* 🔥 50–50 split */
         align-items: center;
         padding: 120px 8% 40px;
+        gap: 40px;
     }
 
-    /* CONTENT */
+    /* LEFT CONTENT */
     .hero-content {
-        max-width: 560px;
+        max-width: 520px;
     }
 
-    /* TITLE */
     .hero-content h1 {
-        font-size: 3.4rem;
+        font-family: 'Poppins', sans-serif;
+        font-size: 46px;
         font-weight: 700;
-        margin-bottom: 14px;
+        color: #5eead4;
+        /* teal glow */
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
     }
 
-    /* DESCRIPTION */
     .hero-content p {
         font-size: 1.05rem;
-        color: #134e4a;
-        margin-bottom: 32px;
+        color: #3cc0b7;
+        margin-bottom: 30px;
+        font-weight: bold;
     }
 
     /* BUTTONS */
@@ -74,47 +76,64 @@
     }
 
     .hero-buttons a {
-        padding: 14px 30px;
+        padding: 14px 32px;
         border-radius: 999px;
-        font-size: 0.95rem;
+        font-size: .95rem;
         font-weight: 600;
         text-decoration: none;
-        transition: 0.3s;
+        transition: .3s;
     }
 
-    /* SIGN UP */
     .btn-signup {
-        background: #ffffff;
-        color: #0b3d3a;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        background: #fff;
+        color: black;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, .15);
     }
 
-    .btn-signup:hover {
-        transform: translateY(-2px);
-    }
-
-    /* LOGIN */
     .btn-login {
         background: linear-gradient(135deg, #ff8a00, #ffb347);
         color: #fff;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
 
-    .btn-login:hover {
-        transform: translateY(-2px);
-    }
-
-    /* FEATURE LINES */
+    /* FEATURES */
     .features p {
-        font-size: 0.95rem;
+        font-size: .95rem;
         margin-bottom: 8px;
-        color: #145c55;
+        color:#3cc0b7;
+    }
+
+    /* RIGHT IMAGE */
+    .hero-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-image img {
+        width: 100%;
+        max-width: 520px;
+        /* 🔥 BIG IMAGE */
+        height: auto;
+        animation: float 4s ease-in-out infinite;
+    }
+
+    /* FLOAT ANIMATION */
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-12px);
+        }
     }
 
     /* RESPONSIVE */
-    @media(max-width:768px) {
+    @media(max-width:900px) {
         .hero {
-            justify-content: center;
+            grid-template-columns: 1fr;
             text-align: center;
         }
 
@@ -122,46 +141,39 @@
             justify-content: center;
             flex-wrap: wrap;
         }
-
-        .navbar {
-            justify-content: center;
-        }
     }
 </style>
-</head>
 
-<body>
+<!-- NAVBAR -->
+<div class="navbar">
+    <img src="{% static 'assets/lg.png' %}" alt="NextDoor Logo">
+</div>
 
-    <!-- TOP LEFT LOGO (VISIBLE & FIXED) -->
-    <div class="navbar">
-        <img src="{% static 'assets/logo.png' %}" alt="NextDoor Logo">
+<!-- HERO -->
+<section class="hero">
+
+    <!-- LEFT -->
+    <div class="hero-content">
+        <h1>NextDoor</h1>
+        <p>
+            Find services near you conveniently and travel to new places
+            feeling like home
+        </p>
+
+        <div class="hero-buttons">
+            <a href="/signup" class="btn-signup">Sign Up</a>
+            <a href="/login" class="btn-login">Log In</a>
+        </div>
+
+        <div class="features">
+            <p>• Discover verified nearby services</p>
+            <p>• Travel-friendly local experiences</p>
+            <p>• Built for comfort, safety & convenience</p>
+        </div>
     </div>
 
-    <!-- HERO SECTION -->
-    <section class="hero">
-        <div class="hero-content">
-
-            <h1>NextDoor</h1>
-
-            <p>
-                Find services near you conveniently and travel to new places feeling like home
-            </p>
-
-            <div class="hero-buttons">
-                <a href="/signup" class="btn-signup">Sign Up</a>
-                <a href="/login" class="btn-login">Log In</a>
-            </div>
-
-            <div class="features">
-                <p>• Discover verified nearby services</p>
-                <p>• Travel-friendly local experiences</p>
-                <p>• Built for comfort, safety & convenience</p>
-            </div>
-
-        </div>
-    </section>
-</body>
 
 
+</section>
 
 {% endblock %}

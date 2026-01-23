@@ -1,17 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block content %}
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ place.name }}</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+/* ---- SAME CSS AS YOURS (UNCHANGED) ---- */
 *{
     margin:0;
     padding:0;
@@ -21,69 +16,83 @@
 
 body{
     min-height:100vh;
-    background:linear-gradient(135deg,#b2f7ef,#d6fff6,#fff9c4);
-    padding:18px;
+    background-image:url("{% static 'assets/bg.jpg' %}");
+    background-size:cover;
+    background-position:center;
+    padding:20px;
 }
 
-/* ================= CONTAINER ================= */
-.container{
-    max-width:540px;
-    margin:auto;
-    background:rgba(255,255,255,.95);
-    border-radius:22px;
-    padding:22px;
-    box-shadow:0 20px 40px rgba(0,0,0,.15);
+.place-wrapper{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.place-card{
+    width:100%;
+    max-width:560px;
+    background:rgba(255,255,255,.18);
+    backdrop-filter:blur(18px);
+    border-radius:26px;
+    padding:26px;
+    border:1px solid rgba(255,255,255,.35);
+    box-shadow:0 30px 60px rgba(0,0,0,.35);
     animation:fadeUp .6s ease;
 }
 
 @keyframes fadeUp{
-    from{opacity:0;transform:translateY(20px)}
+    from{opacity:0;transform:translateY(25px)}
     to{opacity:1;transform:translateY(0)}
 }
 
-/* ================= HEADER ================= */
-h2{
-    color:#006d77;
-    margin-bottom:6px;
+.place-card h2{
+    color:#5eead4;
+    font-weight:700;
 }
 
 .badges{
     display:flex;
     gap:8px;
-    margin-bottom:12px;
+    margin-bottom:14px;
 }
 
 .badge{
     font-size:.7rem;
-    padding:4px 10px;
+    padding:5px 12px;
     border-radius:999px;
     font-weight:600;
 }
 
-.verified{background:#1da1f2;color:#fff}
-.open{background:#2ecc71;color:#fff}
-.closed{background:#e74c3c;color:#fff}
-.closing{background:#f39c12;color:#fff}
+.verified{background:#22c55e;color:#fff}
+.open{background:#38bdf8;color:#fff}
+.closed{background:#ef4444;color:#fff}
+.closing{background:#f59e0b;color:#fff}
 
-/* ================= INFO ================= */
 .info p{
-    font-size:.85rem;
+    font-size:.9rem;
+    color:rgba(255,255,255,.85);
     margin-top:6px;
-    color:#444;
 }
 
-/* ================= MAP ================= */
 iframe{
     width:100%;
     height:240px;
-    border-radius:14px;
+    border-radius:16px;
     border:none;
-    margin:16px 0;
+    margin:18px 0;
 }
 
-/* ================= RATING ================= */
-.rating{
-    margin-top:10px;
+.map-btn{
+    display:block;
+    padding:14px;
+    border-radius:14px;
+    background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+    color:#fff;
+    text-align:center;
+    text-decoration:none;
+    font-weight:600;
+    margin-bottom:14px;
 }
 
 .stars{
@@ -93,136 +102,95 @@ iframe{
     cursor:pointer;
 }
 
-.stars span{
-    color:#ccc;
-    transition:.2s;
-}
-
-.stars span.active{
-    color:#f1c40f;
-}
+.stars span{color:#334155}
+.stars span.active{color:#facc15}
 
 .rating-info{
     font-size:.8rem;
+    color:rgba(255,255,255,.75);
     margin-top:4px;
 }
 
-/* ================= BUTTONS ================= */
-button, .map-btn{
+button{
     width:100%;
-    margin-top:12px;
+    margin-top:14px;
     padding:14px;
     border:none;
     border-radius:14px;
-    background:linear-gradient(135deg,#00b4d8,#0077b6);
+    background:linear-gradient(135deg,#22c55e,#16a34a);
     color:white;
     font-weight:600;
     cursor:pointer;
-    text-decoration:none;
-    display:block;
-    text-align:center;
 }
-
-/* ================= SKELETON ================= */
-.skeleton{
-    background:linear-gradient(90deg,#eee,#f5f5f5,#eee);
-    background-size:400% 100%;
-    animation:shimmer 1.2s infinite;
-    border-radius:12px;
-}
-
-@keyframes shimmer{
-    0%{background-position:100% 0}
-    100%{background-position:-100% 0}
-}
-
-.skel-title{height:28px;width:70%;margin-bottom:10px}
-.skel-text{height:14px;width:100%;margin-top:8px}
-.skel-map{height:240px;margin:16px 0}
-.skel-btn{height:44px;margin-top:10px}
 </style>
-</head>
 
-<body>
+<div class="place-wrapper">
 
-<!-- ================= SKELETON ================= -->
-<div class="container" id="skeleton">
-    <div class="skeleton skel-title"></div>
-    <div class="skeleton skel-text"></div>
-    <div class="skeleton skel-text"></div>
-    <div class="skeleton skel-map"></div>
-    <div class="skeleton skel-btn"></div>
-    <div class="skeleton skel-btn"></div>
+<div class="place-card">
+
+<h2>{{ place.name }}</h2>
+
+<div class="badges">
+    <span class="badge verified">✔ Verified</span>
+    <span class="badge {{ status }}">{{ status|title }}</span>
 </div>
 
-<!-- ================= CONTENT ================= -->
-<div class="container" id="content" style="display:none;">
+<div class="info">
+    <p><strong>📍 Address:</strong> {{ place.address }}</p>
+    <p><strong>⏰ Timings:</strong>
+        {% if place.open_24_hours %}
+            Open 24 Hours
+        {% else %}
+            {{ place.open_time }} – {{ place.close_time }}
+        {% endif %}
+    </p>
+    <p><strong>📆 Working Days:</strong> {{ place.working_days|join:", " }}</p>
+    <p><strong>📞 Phone:</strong> {{ place.phone }}</p>
+</div>
 
-    <h2>{{ place.name }}</h2>
+<iframe src="https://www.google.com/maps?q={{ place.latitude }},{{ place.longitude }}&z=15&output=embed"></iframe>
 
-    <div class="badges">
-        <span class="badge verified">✔ Verified</span>
-        <span class="badge {{ status }}">{{ status|title }}</span>
+<a class="map-btn"
+   href="https://www.google.com/maps/dir/?api=1&destination={{ place.latitude }},{{ place.longitude }}"
+   target="_blank">
+   🗺️ Open in Google Maps
+</a>
+
+<div class="rating">
+    <div class="stars" id="stars">
+        <span data-value="1">★</span>
+        <span data-value="2">★</span>
+        <span data-value="3">★</span>
+        <span data-value="4">★</span>
+        <span data-value="5">★</span>
     </div>
+    <div class="rating-info">
+        ⭐ {{ avg_rating }} / 5 ({{ total_ratings }} reviews)
+    </div>
+</div>
 
-    <div class="info">
-        <p><strong>📍 Address:</strong> {{ place.address }}</p>
-        <p><strong>⏰ Timings:</strong>
-            {% if place.open_24_hours %}
-                Open 24 Hours
-            {% else %}
-                {{ place.open_time }} – {{ place.close_time }}
-            {% endif %}
+{% if user.is_authenticated %}
+    {% if user_has_rated %}
+        <p style="margin-top:12px;color:#facc15;font-weight:600;">
+            ⭐ You already rated this place
         </p>
-        <p><strong>📆 Working Days:</strong> {{ place.working_days|join:", " }}</p>
-        <p><strong>📞 Call us at:</strong> {{ place.phone }}</p>
-    </div>
+    {% else %}
+        <form method="POST" action="{% url 'submit_rating' place.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="rating" id="ratingValue">
+            <button type="submit">Submit Rating</button>
+        </form>
+    {% endif %}
+{% else %}
+    <p style="margin-top:12px;color:#f87171;font-weight:600;">
+        Login to submit a rating
+    </p>
+{% endif %}
 
-    <!-- MAP -->
-    <iframe
-        src="https://www.google.com/maps?q={{ place.latitude }},{{ place.longitude }}&z=15&output=embed">
-    </iframe>
-
-    <!-- OPEN MAP -->
-    <a class="map-btn"
-       href="https://www.google.com/maps/dir/?api=1&destination={{ place.latitude }},{{ place.longitude }}"
-       target="_blank">
-        🗺️ Open in Google Maps
-    </a>
-
-    <!-- RATING -->
-    <div class="rating">
-        <div class="stars" id="stars">
-            <span data-value="1">★</span>
-            <span data-value="2">★</span>
-            <span data-value="3">★</span>
-            <span data-value="4">★</span>
-            <span data-value="5">★</span>
-        </div>
-        <div class="rating-info">
-            ⭐ {{ avg_rating }} / 5 ({{ total_ratings }} reviews)
-        </div>
-    </div>
-
-    <!-- SUBMIT RATING -->
-    <form method="POST" action="{% url 'submit_rating' place.id %}">
-        {% csrf_token %}
-        <input type="hidden" name="rating" id="ratingValue">
-        <button type="submit">Submit Rating</button>
-    </form>
-
+</div>
 </div>
 
 <script>
-/* SKELETON SWITCH */
-window.onload=()=>{
-    setTimeout(()=>{
-        skeleton.style.display="none";
-        content.style.display="block";
-    },1200);
-};
-
-/* STAR LOGIC */
 const stars=document.querySelectorAll("#stars span");
 const ratingInput=document.getElementById("ratingValue");
 
@@ -231,12 +199,10 @@ stars.forEach(star=>{
         const value=star.dataset.value;
         ratingInput.value=value;
         stars.forEach(s=>{
-            s.classList.toggle("active", s.dataset.value<=value);
+            s.classList.toggle("active",s.dataset.value<=value);
         });
     });
 });
 </script>
 
-</body>
-</html>
 {% endblock %}
