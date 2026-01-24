@@ -7,7 +7,8 @@ class Place(models.Model):
     business = models.OneToOneField(
         Business,
         on_delete=models.CASCADE,
-        related_name="place"
+        related_name="place",
+        null=True
     )
 
     CATEGORY_CHOICES = [
